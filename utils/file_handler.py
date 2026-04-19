@@ -7,14 +7,19 @@ class FileHandler:
     def load(self, percent):
         df = pd.read_csv(self.file_path)
 
-        # Drop CustomerID (not useful)
+    # Drop ID
         if 'CustomerID' in df.columns:
             df = df.drop(columns=['CustomerID'])
 
-        # Select ONLY required features
-        df = df[['Age', 'Annual Income (k$)', 'Spending Score (1-100)']]
+    # Encode Gender
+        if 'Gender' in df.columns:
+            df['Gender'] = df['Gender'].map({'Male': 0, 'Female': 1})
 
+    # Keep numeric
+        df = df.select_dtypes(include=['number'])
 
-        # Apply percentage
+    # Remove missing
+        df = df.dropna()
+
         n = int(len(df) * percent / 100)
         return df.iloc[:n]
